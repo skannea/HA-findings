@@ -9,12 +9,12 @@ It has SSID *quartet* and handles addresses 192.168.8.x. Static addresses have x
 My goal was to be able to manage and access all my ESPHome devices from my HA.
 
 When connected to *republik* with my PC: 
-- Got myself a ZeroTier network with addresses 192.168.192.x and a network id *a09acf02331f7899*
+- Got myself a ZeroTier network with addresses 192.168.192.x and a network id *a09ac320f31f7899*
 - Installed ZeroTier One on my PC which got address 192.168.192.14
 - Installed ZeroTier One add-on in my HA which got address 192.168.192.77
 - Tested to log on from PC to HA using 192.168.192.77:8123 
 See the add-on documentation for how to do this.
-The address to my *ZeroTier network page* is https://my.zerotier.com/network/a09acf02331f7899
+The address to my *ZeroTier network page* is https://my.zerotier.com/network/a09ac320f31f7899
 
 Note that you can log on to HA using 192.168.192.77:8123 from any local network where there is an internet connection. 
 
@@ -50,16 +50,16 @@ When connected to *quartet*:
 - I installed ZeroTier on *landgate*:
   - ran command `curl -s https://install.zerotier.com | sudo bash`
   - waited a couple of minutes
-  - noted the ZeroTier address *3aea0e1e4a*.
-  - connected to my ZeroTier network using `sudo zerotier-cli join a09acf02331f7899`
-  - on my ZeroTier network page I found the new ZeroTier address *3aea0e1e4a* and checked the box to authenticate it
+  - noted the ZeroTier address *3aeae1e04a*.
+  - connected to my ZeroTier network using `sudo zerotier-cli join a09ac320f31f7899`
+  - on my ZeroTier network page I found the new ZeroTier address *3aeae1e04a* and checked the box to authenticate it
   - here I also got the address for *landgate*: 192.168.192.31
-  - ran command `sudo zerotier-cli listnetworks` to get device name *ztuku5a6vk*: `...OK PRIVATE ztuku5a6vk 192.168.192.31/24`
+  - ran command `sudo zerotier-cli listnetworks` to get device name *zt5ukua6vk*: `...OK PRIVATE zt5ukua6vk 192.168.192.31/24`
 
 - I configured *landgate* to work as a ZeroTier bridge
   - uncommented line `net.ipv4.ip_forward=1` using the *nano* editor and command `sudo nano /etc/sysctl.conf` (exit with ctrl-X)
   - ran command `sudo sysctl -w net.ipv4.ip_forward=1` 
-  - introduced two variables with command `PHY_IFACE=wlan0; ZT_IFACE=ztuku5a6vk`
+  - introduced two variables with command `PHY_IFACE=wlan0; ZT_IFACE=zt5ukua6vk`
   - ran command `sudo iptables -t nat -A POSTROUTING -o $PHY_IFACE -j MASQUERADE`
   - ran command `sudo iptables -A FORWARD -i $PHY_IFACE -o $ZT_IFACE -m state --state RELATED,ESTABLISHED -j ACCEPT`
   - ran command `sudo iptables -A FORWARD -i $ZT_IFACE -o $PHY_IFACE -j ACCEPT`
