@@ -1,4 +1,6 @@
 ## How to access remote ESPHome devices using ZeroTier VPN
+Main source is https://zerotier.atlassian.net/wiki/spaces/SD/pages/224395274/Route+between+ZeroTier+and+Physical+Networks
+
 I am running a HA (HA OS) at home. I have a number of ESPHome devices there. My local network has SSID *republik* and has addresses 192.168.0.x. 
 
 I also have a need for a few ESPHome devices located in my summer house where I have a mobile router. 
