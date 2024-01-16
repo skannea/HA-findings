@@ -36,7 +36,7 @@ Router port forwarding functionality is often found under *virtual servers*.
  
 ### Host 1 - HTTPS access to HA front-end
 
-Let *https://**ha**.myduckname.duckdns.org* be the address to use to access HA front-end.
+Let `https://ha.myduckname.duckdns.org` be the address to use to access HA front-end.
  
  - Details
    -  Domain Names: ha.myduckname.duckdns.org
@@ -62,7 +62,7 @@ The *Forward port* makes the trick: this is an illegal port that makes all acces
 
 ### Host 2 - HTTPS access to password protected pages
 
-Let *https://**pw**.myduckname.duckdns.org**/protected/**... * be the addresses to use to access password protected pages.
+Let `https://pw.myduckname.duckdns.org/protected/... ` be the addresses to use to access password protected pages.
 
 Make an Access list:
 - Details
@@ -90,7 +90,7 @@ Make a new proxy server:
 
 ### Host 3 - HTTPS access to open pages
 
-Let *https://**open**.myduckname.duckdns.org**/open/**... * be the addresses to use to access unprotected pages.
+Let `https://open.myduckname.duckdns.org/open/...` be the addresses to use to access unprotected pages.
 
 Make a new proxy server:
 - Details
@@ -108,6 +108,38 @@ Make a new proxy server:
 - SSL
     - SSL Certificate: (*request a new SSL certificate, will result in open.myduckname.duckdns.org*)
     - Force SSL: on
+
+### Additional protected hosts  
+
+If you want to add a protected host based on another access list you can do that the same way as Host 2.
+
+Let `https://xx.myduckname.duckdns.org/protected/... ` be the addresses to use to access password protected pages.
+
+Make an Access list:
+- Details
+  - Name: JustMe
+- Authorization
+  - User name: anders
+  - Password: thepassword
+
+Make a new proxy server:
+- Details
+   -  Domain Names: pw.myduckname.duckdns.org
+   -  Scheme: http 
+   -  Forward IP: 192.168.0.111
+   -  Forward Port: 8124 (*the trick*)
+   -  Websockets Support: on
+   -  Access List: JustMe
+- Custom locations
+  - Define location: /protected
+  - Scheme: http 
+  - Forward IP: 192.168.0.111/local/protected
+  - Forward Port: 8123   
+- SSL
+    - SSL Certificate: (*request a new SSL certificate, will result in pw.myduckname.duckdns.org*)
+    - Force SSL: on
+
+
 
 
 
