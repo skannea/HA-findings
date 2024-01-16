@@ -33,7 +33,15 @@ Router port forwarding functionality is often found under *virtual servers*.
 - In addition to your Duck DNS domain, addresses like *alpha.myduckname.duckdns.org*, *beta.myduckname.duckdns.org* and *mqtt.myduckname.duckdns* will be forwarded to your router. 
 
 ## Set up NPM proxy hosts 
- 
+
+In this example, HA is assumed to be accessed on the local network with ip `192.168.0.111:8123`.
+
+The following folder structure is used:
+- /www         (web pages placed here are accessed with `http://192.168.0.111:8123/local`)
+  - /protected (for pages that require username/password)
+  - /open      (for pages that  
+  - /common    (for javascript and css files that may be used by all pages)
+         
 ### Host 1 - HTTPS access to HA front-end
 
 Let `https://ha.myduckname.duckdns.org` be the address to use to access HA front-end.
@@ -58,7 +66,7 @@ First, block all access to *ha.myduckname.duckdns.org/local* by adding the follo
   - Forward IP: 192.168.0.111
   - Forward Port: 8124  
 
-The *Forward port* makes the trick: this is an illegal port that makes all access attempts result in an error: `502 Bad Gateway`.
+The *Forward port* makes the trick: this is an unused port that makes all access attempts result in an error: `502 Bad Gateway`.
 
 ### Host 2 - HTTPS access to password protected pages
 
@@ -88,7 +96,7 @@ Make a new proxy server:
     - SSL Certificate: (*request a new SSL certificate, will result in pw.myduckname.duckdns.org*)
     - Force SSL: on
 
-### Host 3 - HTTPS access to open pages
+### Host 3 - HTTPS access to unprotected pages
 
 Let `https://open.myduckname.duckdns.org/open/...` be the addresses to use to access unprotected pages.
 
@@ -111,36 +119,34 @@ Make a new proxy server:
 
 ### Additional protected hosts  
 
-If you want to add a protected host based on another access list you can do that the same way as Host 2.
+You may add another host for protected pages that is 
+- based on another access list 
+- with address `https://xxx.myduckname.duckdns.org/yyy/... ` 
 
-Let `https://xx.myduckname.duckdns.org/protected/... ` be the addresses to use to access password protected pages.
+You create it the same way as for Host 2:
+- Make a new access list with user/password pairs.
+- Assign the access list to a new proxy server with domain name xxx.myduckname.duckdns.org
+- Define a location `/yyy` with forward ip to `192.168.0.111/local/yyy`   
+- Make  a new SSL certificate
 
-Make an Access list:
-- Details
-  - Name: JustMe
-- Authorization
-  - User name: anders
-  - Password: thepassword
+### Common resources for public and protected hosts  
 
-Make a new proxy server:
-- Details
-   -  Domain Names: pw.myduckname.duckdns.org
-   -  Scheme: http 
-   -  Forward IP: 192.168.0.111
-   -  Forward Port: 8124 (*the trick*)
-   -  Websockets Support: on
-   -  Access List: JustMe
+If you want to set up javascript and css files to be used by protected as well as unprotected pages, the method described so far has to be complemented.
+
+In host 2 as well as host 3, define another location:
 - Custom locations
-  - Define location: /protected
+  - Define location: /common
   - Scheme: http 
-  - Forward IP: 192.168.0.111/local/protected
+  - Forward IP: 192.168.0.111/local/common
   - Forward Port: 8123   
-- SSL
-    - SSL Certificate: (*request a new SSL certificate, will result in pw.myduckname.duckdns.org*)
-    - Force SSL: on
 
+In your HTML file, refer files like this:
 
-
+      <head>
+        ...
+        <link rel="icon" href="/common/nicefavicon.ico" type="image/x-icon" />
+        <link rel="stylesheet" href="/common/prettycolors.css" />
+        <script src="/common/utilities.js" type="text/javascript"></script>
 
 
 ### Host 4 - Secure Websocket access to MQTT broker 
