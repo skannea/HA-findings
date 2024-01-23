@@ -1,6 +1,7 @@
-## How to access remote ESPHome devices using ZeroTier VPN
-Main source is https://zerotier.atlassian.net/wiki/spaces/SD/pages/224395274/Route+between+ZeroTier+and+Physical+Networks
+# How to access remote ESPHome devices using ZeroTier VPN
+Main source of this page is https://zerotier.atlassian.net/wiki/spaces/SD/pages/224395274/Route+between+ZeroTier+and+Physical+Networks
 
+## My needs 
 I am running a HA (HA OS) at home. I have a number of ESPHome devices there. My local network has SSID *republik* and has addresses 192.168.0.x. 
 
 I also have a need for a few ESPHome devices located in my summer house where I have a mobile router. 
@@ -8,6 +9,7 @@ It has SSID *quartet* and handles addresses 192.168.8.x. Static addresses have x
 
 My goal was to be able to manage and access all my ESPHome devices from my HA.
 
+## Join ZeroTier
 When connected to *republik* with my PC: 
 - Got myself a ZeroTier network with addresses 192.168.192.x and a network id *a09ac320f31f7899*
 - Installed ZeroTier One on my PC which got address 192.168.192.14
@@ -18,6 +20,7 @@ The address to my *ZeroTier network page* is https://my.zerotier.com/network/a09
 
 Note that you can log on to HA using 192.168.192.77:8123 from any local network where there is an internet connection. 
 
+## Make the RPi 
 When connected to *quartet*:
 - I put an 16 GB SD card into the PC
 - downloaded and ran *Raspberry Pi Imager*
@@ -30,6 +33,7 @@ When connected to *quartet*:
   - On the SERVICES tab I enabled SSH with password authentification
 - made the SD card
 
+## Install ZeroTier
 - I started Landgate:
   - put the SD card into my RPi Zero W
   - powered on
@@ -56,6 +60,7 @@ When connected to *quartet*:
   - here I also got the address for *landgate*: 192.168.192.31
   - ran command `sudo zerotier-cli listnetworks` to get device name *zt5ukua6vk*: `...OK PRIVATE zt5ukua6vk 192.168.192.31/24`
 
+## Configure and join
 - I configured *landgate* to work as a ZeroTier bridge
   - uncommented line `net.ipv4.ip_forward=1` using the *nano* editor and command `sudo nano /etc/sysctl.conf` (exit with ctrl-X)
   - ran command `sudo sysctl -w net.ipv4.ip_forward=1` 
@@ -71,10 +76,18 @@ When connected to *quartet*:
 - on my ZeroTier network page, under Advanced, configured a *managed route* 192.168.8.0/23 via 192.168.192.31 
 
 Now all connections to ip addresses 192.168.8.x on my local network at home will be forwarded to 192.168.8.x on the local network at my summer house.
- 
+
+## Install ESPHome devices 
 - I set up an ESPHome device at my summer house:
   - in HA, edited code for an ESPHome device connecting to *quartet* and with static address 192.168.8.15 
   - installed on the ESPHome hardware via a plugged in cable to my PC. 
   - moved this in range of *quartet* and powered on
-  - added a new ESPHome device in HA settings by specifying the address 192.168.8.15  
+  - added a new ESPHome device in HA settings by specifying the address 192.168.8.15 (it will not be aoutomatically detected!)  
 
+## Notes
+I repeated this for another site with ip addresses 192.168.9.x. 
+However, I couldn't configure a *managed route* 192.168.9.0/23 via ... 
+
+The reason is that a network can't be described as 192.168.9.0/23. */23* means the 23 leftmost bits, and 9 is binary 0000 1001. 
+
+When I changed the ip addresses to 192.168.10.x it worked fine.
