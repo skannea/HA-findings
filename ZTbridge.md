@@ -91,3 +91,5 @@ However, I couldn't configure a *managed route* 192.168.9.0/23 via ...
 The reason is that a network can't be described as 192.168.9.0/23. */23* means the 23 leftmost bits, and 9 is binary 0000 1001. 
 
 When I changed the ip addresses to 192.168.10.x it worked fine.
+
+If iptables can't be found, install it using `sudo apt install iptables`
